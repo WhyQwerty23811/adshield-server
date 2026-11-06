@@ -9,19 +9,21 @@ It also includes the complete **100% native Java Android client application** fo
 ## 📑 Table of Contents
 1. [How It Works](#-how-it-works)
 2. [Why Host Your Own Private DNS?](#-why-host-your-own-private-dns)
-3. [Architecture Overview](#-architecture-overview)
-4. [Prerequisites](#-prerequisites)
-5. [How to Run It (1-Click VPS Deployment)](#-how-to-run-it-1-click-vps-deployment)
-6. [Alternative: Docker Deployment](#-alternative-docker-deployment)
-7. [Device Connection Guides](#-device-connection-guides)
+3. [Connecting Directly Using VPS IP (No Domain Needed)](#-connecting-directly-using-vps-ip-no-domain-needed)
+4. [Getting a 100% Free Domain / Hostname (For Android Private DNS)](#-getting-a-100-free-domain--hostname-for-android-private-dns)
+5. [Architecture Overview](#-architecture-overview)
+6. [Prerequisites](#-prerequisites)
+7. [How to Run It (1-Click VPS Deployment)](#-how-to-run-it-1-click-vps-deployment)
+8. [Alternative: Docker Deployment](#-alternative-docker-deployment)
+9. [Device Connection Guides](#-device-connection-guides)
    - [Android (Native Private DNS)](#1-android-9-to-15--native-private-dns)
    - [Apple iOS / iPadOS / macOS](#2-apple-ios--ipados--macos)
    - [Windows 11](#3-windows-11)
    - [Home Routers & Linux Machines](#4-home-routers--linux-machines)
    - [AdShield Android App](#5-adshield-android-app-client)
-8. [Cybersecurity Web Management Dashboard](#-cybersecurity-web-management-dashboard)
-9. [Verification & Troubleshooting](#-verification--troubleshooting)
-10. [Repository Structure](#-repository-structure)
+10. [Cybersecurity Web Management Dashboard](#-cybersecurity-web-management-dashboard)
+11. [Verification & Troubleshooting](#-verification--troubleshooting)
+12. [Repository Structure](#-repository-structure)
 
 ---
 
@@ -62,7 +64,70 @@ When you type a hostname like `dns.yourdomain.com` into Android's **Private DNS*
 
 ---
 
-## 🏗️ Architecture Overview
+## 🔌 Connecting Directly Using VPS IP (No Domain Needed)
+
+Yes! You can connect to your AdShield server **directly via IP address** on several platforms without buying or setting up any domain name:
+
+| Platform / Method | Can Use Raw VPS IP? | Port | How to Connect |
+| :--- | :---: | :---: | :--- |
+| **AdShield Android App** | **YES** | `53` | Settings → Lookup service → Select **Custom AdShield VPS Server** → Enter VPS IP |
+| **Home Wi-Fi Router** | **YES** | `53` | Router Admin (192.168.1.1) → DHCP/DNS Settings → Set Primary DNS to VPS IP |
+| **Windows 10 / 11** | **YES** | `53` | Network Adapter Properties → IPv4 → Preferred DNS: enter VPS IP |
+| **macOS / Linux** | **YES** | `53` | Network Settings or `/etc/resolv.conf` → `nameserver <YOUR_VPS_IP>` |
+| **Android Wi-Fi (Static)** | **YES** | `53` | Wi-Fi Settings → Modify Network → Advanced → IP Settings: Static → DNS 1: VPS IP |
+| **Android Native Private DNS** | **NO** | `853` | Android OS requires a hostname for TLS certificates (*use free hostname below*) |
+
+### 1. In the AdShield Android App:
+1. Open the **AdShield app** on your phone.
+2. Tap the **Settings** tab.
+3. Tap **Lookup service**.
+4. Select **Custom AdShield VPS Server**.
+5. Enter your VPS IP (e.g. `123.45.67.89`) and tap Save.
+6. Return to Dashboard and toggle the Shield ON. All DNS requests are filtered through your VPS on standard UDP port 53.
+
+### 2. Network-Wide on Your Home Router:
+1. Open your browser and go to your router's gateway (usually `192.168.1.1` or `192.168.0.1`).
+2. Navigate to **DHCP** or **LAN / WAN DNS Settings**.
+3. Set **Primary DNS** to your VPS IPv4 address (Port `53` is used automatically).
+4. Save and reboot your router.
+*Now every Smart TV, PlayStation/Xbox, iPhone, Android, and PC connected to your home Wi-Fi is automatically protected from ads without installing anything!*
+
+---
+
+## 🆓 Getting a 100% Free Domain / Hostname (For Android Private DNS)
+
+If you want to use **Android's native "Private DNS"** (Settings → Network & Internet → Private DNS), Android **requires a hostname** because it validates a secure TLS certificate on Port 853.
+
+**You do NOT need to buy a domain!** You can get a free hostname in 60 seconds using any of these methods:
+
+### Method A: Free DuckDNS (Recommended – 60 Seconds)
+1. Go to **[duckdns.org](https://www.duckdns.org)**.
+2. Sign in with Google, GitHub, or Reddit (100% free, no credit card required).
+3. Under **domains**, choose a subdomain name (e.g., `myadshield`).
+4. In the **current ip** box, enter your VPS Public IPv4 Address.
+5. Click **add domain**.
+6. You now have a permanent free hostname:
+   ```
+   myadshield.duckdns.org
+   ```
+7. When running `sudo bash deploy.sh` on your VPS, enter `myadshield.duckdns.org`. Certbot will automatically issue a genuine Let's Encrypt SSL certificate!
+8. In your phone's **Private DNS**, enter `myadshield.duckdns.org`. Done!
+
+### Method B: Free `sslip.io` (Instant – Zero Registration)
+Every IP on the internet automatically has a working hostname via `sslip.io` without signing up anywhere:
+* If your VPS IP is `123.45.67.89`, your instant hostname is:
+  ```
+  123-45-67-89.sslip.io
+  ```
+* This hostname automatically resolves worldwide to `123.45.67.89`.
+* When running `sudo bash deploy.sh`, you can enter `123-45-67-89.sslip.io` as your domain!
+
+### Method C: Free No-IP
+1. Go to **[noip.com](https://www.noip.com)** and create a free account.
+2. Create a free hostname (e.g., `myadshield.ddns.net`).
+3. Set the target IP to your VPS IP.
+
+---
 
 ```
                       ┌──────────────────────────────────────────────┐
