@@ -129,6 +129,8 @@ Every IP on the internet automatically has a working hostname via `sslip.io` wit
 
 ---
 
+## 🏗️ Architecture Overview
+
 ```
                       ┌──────────────────────────────────────────────┐
                       │    Android Device (Native Private DNS)       │
