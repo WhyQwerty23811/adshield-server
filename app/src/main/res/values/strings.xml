@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">AdShield</string>
+    <string name="vpn_channel_name">AdShield Protection Service</string>
+    <string name="vpn_channel_desc">Shows when AdShield is blocking ads</string>
+    <string name="vpn_notification_title">AdShield is on</string>
+    <string name="vpn_notification_text">Blocking ads and trackers</string>
+    <string name="vpn_action_stop">Turn off</string>
+    <string name="vpn_action_reconnect">Turn on again</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">Home</string>
+    <string name="nav_apps">Apps</string>
+    <string name="nav_filters">Block list</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">AdShield</string>
+    <string name="dashboard_subtitle">Blocks ads &amp; trackers in all your apps</string>
+    <string name="status_protected">PROTECTED</string>
+    <string name="status_inactive">OFF</string>
+    <string name="status_connecting">TURNING ON…</string>
+    <string name="power_button_desc">Turn protection on or off</string>
+    <string name="stat_blocked">Ads blocked</string>
+    <string name="stat_total">Sites checked</string>
+    <string name="stat_percentage">Were ads</string>
+    <string name="stat_today">Blocked today</string>
+    <string name="stat_uptime">Protected for</string>
+
+    <!-- App Selection -->
+    <string name="apps_title">Apps</string>
+    <string name="apps_subtitle">Turn off ad blocking for an app that doesn\'t work right</string>
+    <string name="search_apps_hint">Search apps…</string>
+    <string name="filter_all">All</string>
+    <string name="filter_protected">Protected</string>
+    <string name="filter_excluded">Not protected</string>
+
+    <!-- Query Log -->
+
+    <!-- Filters -->
+    <string name="filters_title">Block list</string>
+    <string name="tab_blacklist">Blocked</string>
+    <string name="tab_whitelist">Allowed</string>
+    <string name="tab_community">Built-in</string>
+    <string name="add_rule">Add website</string>
+    <string name="enter_domain_hint">e.g. ads.example.com</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="theme_title">Theme</string>
+    <string name="dns_provider_title">Lookup service</string>
+    <string name="youtube_shield_title">YouTube</string>
+    <string name="spotify_shield_title">Spotify</string>
+    <string name="boot_startup_title">Start on Device Boot</string>
+    <string name="battery_optim_title">Battery Optimization</string>
+    <string name="about_title">About AdShield</string>
+    <string name="version_label">Version 2.0.0</string>
+
+    <!-- Ad Mute (official YouTube, YT Music, Spotify apps) -->
+    <string name="media_mute_service_label">AdShield Ad Mute</string>
+    <string name="outside_mute_title">Mute ads</string>
+    <string name="outside_mute_desc">Silences ads in the YouTube, YT Music and Spotify apps. Ads still show, but with no sound.</string>
+    <string name="notification_access_title">Allow ad muting</string>
+    <string name="notification_access_desc">AdShield needs to see what\'s playing to know when an ad starts. For Spotify, also turn on Spotify → Settings → Device Broadcast Status.</string>
+    <string name="cyber_hub_title">Ad-free player</string>
+    <string name="cyber_hub_desc">Watch YouTube and listen to Spotify without ads</string>
+</resources>
