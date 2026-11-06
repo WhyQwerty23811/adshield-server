@@ -25,3 +25,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD nc -z 127.0.0.1 8080 || exit 1
 
 ENTRYPOINT ["python3", "adshield_server.py"]
+

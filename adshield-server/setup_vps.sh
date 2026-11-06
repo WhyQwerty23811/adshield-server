@@ -202,3 +202,4 @@ echo -e "Service Commands:"
 echo -e "  - Check status: ${CYAN}systemctl status adshield${NC}"
 echo -e "  - View live logs: ${CYAN}journalctl -u adshield -f${NC}"
 echo -e "  - Restart: ${CYAN}systemctl restart adshield${NC}\n"
+
