@@ -1,0 +1,18 @@
+{
+  "server_hostname": "dns.example.com",
+  "upstream_provider": "cloudflare",
+  "custom_upstream": [],
+  "udp_port": 53,
+  "tcp_port": 53,
+  "dot_port": 853,
+  "doh_port": 443,
+  "web_port": 8080,
+  "tls_cert_file": "/etc/letsencrypt/live/dns.example.com/fullchain.pem",
+  "tls_key_file": "/etc/letsencrypt/live/dns.example.com/privkey.pem",
+  "enable_tls": true,
+  "log_history_limit": 500,
+  "ad_blocking": true,
+  "youtube_shield": true,
+  "spotify_shield": true,
+  "hotstar_shield": true
+}

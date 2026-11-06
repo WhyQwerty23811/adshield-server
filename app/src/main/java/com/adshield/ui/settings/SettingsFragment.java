@@ -46,6 +46,7 @@ public class SettingsFragment extends Fragment {
 
         setupThemePicker();
         setupDnsPicker();
+        setupPrivateDnsCard();
         setupShieldSwitches();
         setupSpotifyMuteSetting();
         setupResetButton();
@@ -130,6 +131,23 @@ public class SettingsFragment extends Fragment {
         }
     }
 
+    private void setupPrivateDnsCard() {
+        if (binding.cardPrivateDnsVps == null) return;
+        binding.cardPrivateDnsVps.setOnClickListener(v -> {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Host Private DNS on Linux VPS")
+                    .setMessage("To use Android's native Private DNS (DoT on Port 853):\n\n" +
+                            "1. Deploy AdShield on your VPS using the included setup script:\n" +
+                            "   bash deploy.sh\n\n" +
+                            "2. On your Android phone, open:\n" +
+                            "   Settings → Network & Internet → Private DNS\n\n" +
+                            "3. Select 'Private DNS provider hostname' and enter your domain (e.g. dns.yourvps.com).\n\n" +
+                            "Benefits: Encrypted system-wide adblocking, 0% extra battery drain, and frees up your device VPN slot!")
+                    .setPositiveButton("Got it", null)
+                    .show();
+        });
+    }
+
     private void setupDnsPicker() {
         updateDnsSummary();
         binding.cardSettingDns.setOnClickListener(v -> {
@@ -137,9 +155,10 @@ public class SettingsFragment extends Fragment {
                     "Cloudflare (fast, recommended)",
                     "Google",
                     "Quad9 (also blocks harmful sites)",
-                    "AdGuard (blocks even more ads)"
+                    "AdGuard (blocks even more ads)",
+                    "Custom AdShield VPS Server"
             };
-            String[] keys = { "cloudflare", "google", "quad9", "adguard" };
+            String[] keys = { "cloudflare", "google", "quad9", "adguard", "custom" };
 
             String currentKey = prefsManager.getDnsProvider();
             int selected = 0;
@@ -154,23 +173,57 @@ public class SettingsFragment extends Fragment {
                     .setTitle("Lookup service")
                     .setSingleChoiceItems(providers, selected, (dialog, which) -> {
                         String newKey = keys[which];
-                        prefsManager.setDnsProvider(newKey);
-                        updateDnsSummary();
-
-                        // Reconnect only if protection is on; otherwise this would start the VPN unasked
-                        Context ctx = requireContext();
-                        if (AdShieldVpnService.getVpnStateLiveData().getValue() == VpnState.CONNECTED) {
-                            Intent reconnectIntent = new Intent(ctx, AdShieldVpnService.class);
-                            reconnectIntent.setAction(AdShieldVpnService.ACTION_RECONNECT);
-                            ctx.startService(reconnectIntent);
-                        }
-
                         dialog.dismiss();
-                        Toast.makeText(ctx, "Now using " + providers[which], Toast.LENGTH_SHORT).show();
+
+                        if ("custom".equals(newKey)) {
+                            promptCustomDnsDialog();
+                        } else {
+                            applyDnsProvider(newKey, providers[which]);
+                        }
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
         });
+    }
+
+    private void promptCustomDnsDialog() {
+        Context ctx = requireContext();
+        final android.widget.EditText input = new android.widget.EditText(ctx);
+        input.setHint("VPS IP or Hostname (e.g. 1.2.3.4)");
+        input.setText(prefsManager.getCustomDns());
+        input.setSingleLine(true);
+
+        int pad = (int) (18 * getResources().getDisplayMetrics().density);
+        android.widget.FrameLayout container = new android.widget.FrameLayout(ctx);
+        container.setPadding(pad, pad / 2, pad, 0);
+        container.addView(input);
+
+        new AlertDialog.Builder(ctx)
+                .setTitle("Custom AdShield VPS IP")
+                .setView(container)
+                .setPositiveButton("Save", (d, w) -> {
+                    String entered = input.getText().toString().trim();
+                    if (!entered.isEmpty()) {
+                        prefsManager.setCustomDns(entered);
+                        applyDnsProvider("custom", "Custom VPS (" + entered + ")");
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void applyDnsProvider(String providerKey, String label) {
+        prefsManager.setDnsProvider(providerKey);
+        updateDnsSummary();
+
+        Context ctx = requireContext();
+        if (AdShieldVpnService.getVpnStateLiveData().getValue() == VpnState.CONNECTED) {
+            Intent reconnectIntent = new Intent(ctx, AdShieldVpnService.class);
+            reconnectIntent.setAction(AdShieldVpnService.ACTION_RECONNECT);
+            ctx.startService(reconnectIntent);
+        }
+
+        Toast.makeText(ctx, "Now using " + label, Toast.LENGTH_SHORT).show();
     }
 
     private void updateDnsSummary() {
@@ -184,6 +237,9 @@ public class SettingsFragment extends Fragment {
                 break;
             case "adguard":
                 binding.tvCurrentDns.setText("AdGuard (blocks even more ads)");
+                break;
+            case "custom":
+                binding.tvCurrentDns.setText("Custom VPS (" + prefsManager.getCustomDns() + ")");
                 break;
             case "cloudflare":
             default:

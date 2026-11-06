@@ -137,6 +137,11 @@ public class PreferencesManager {
                 return new String[]{"9.9.9.9", "149.112.112.112"};
             case "adguard":
                 return new String[]{"94.140.14.14", "94.140.15.15"};
+            case "custom":
+                String custom = getCustomDns();
+                return (custom != null && !custom.trim().isEmpty())
+                        ? new String[]{custom.trim()}
+                        : new String[]{"1.1.1.1", "1.0.0.1"};
             case "cloudflare":
             default:
                 return new String[]{"1.1.1.1", "1.0.0.1"};

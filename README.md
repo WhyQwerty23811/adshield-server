@@ -1,8 +1,44 @@
-# AdShield – Complete Android Application Modernization (v2.0.0)
+# AdShield – Complete Privacy & Ad-Blocking Suite (App & Linux VPS Private DNS)
 
-AdShield is a **100% native Java**, zero-cost, privacy-first Android system-wide ad and tracker blocker powered by the Android `VpnService` API. It executes entirely on-device with **zero external servers, no paid APIs, no logins, and zero data collection**.
+AdShield provides complete system-wide ad, tracker, and telemetry protection across your entire device ecosystem. It offers two flexible modes:
+1. **AdShield Linux VPS Private DNS Server**: Host your own encrypted **DNS-over-TLS (DoT, Port 853)** and **DNS-over-HTTPS (DoH, Port 443)** server on any Linux VPS with free automatic Let's Encrypt TLS. Connect your Android phone via native **Private DNS** with **zero battery drain** and without occupying your device's VPN slot!
+2. **AdShield Android Application**: A 100% native Java on-device VPN ad blocker and query monitor, now featuring support for custom VPS DNS upstreams.
 
 ---
+
+## ⚡ Hosting AdShield Private DNS on Your Linux VPS (1-Click Setup)
+
+Android 9+ has built-in support for **Private DNS** (DNS-over-TLS). When you host AdShield on a Linux VPS:
+- **0% Extra Battery Drain**: Managed directly by the Android OS network stack.
+- **VPN Slot Remains Free**: You can run WireGuard, Tailscale, or work VPNs at the same time.
+- **Ultra-Fast Speed**: Powered by an in-memory LRU RAM cache with sub-millisecond query responses.
+- **Protects All Devices**: Android (Private DNS), iPhone/iPad/macOS (DoH), Windows 11, and home routers.
+
+### 🚀 1-Click VPS Installation:
+SSH into your Linux VPS as root and run:
+```bash
+git clone https://github.com/<your-username>/Ad-Shield.git /opt/adshield-repo
+cd /opt/adshield-repo
+sudo bash deploy.sh
+```
+The installer automatically:
+1. Acquires a free **Let's Encrypt TLS Certificate** for your domain (e.g., `dns.yourdomain.com`).
+2. Cleans up port 53 stub listener conflicts with `systemd-resolved`.
+3. Opens firewall ports (53, 853 DoT, 443 DoH, 8080 Web Dashboard).
+4. Configures automatic certificate renewal hooks.
+5. Launches the AdShield DNS server as a `systemd` service.
+
+### 📱 How to Connect Android Private DNS:
+1. Go to **Settings** → **Network & Internet** → **Private DNS**.
+2. Select **Private DNS provider hostname**.
+3. Enter your domain: `dns.yourdomain.com`
+4. Tap **Save**. Your phone is now 100% protected system-wide!
+
+Access your live Cybersecurity Web Dashboard at `http://<your-vps-ip>:8080/`.
+
+---
+
+## 📱 AdShield Android Client Application (v2.0.0)
 
 ## 🚀 Key Highlights & Milestone 3 Modernization
 

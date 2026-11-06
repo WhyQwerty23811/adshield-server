@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdShield • Private DNS & Ad-Blocking Server</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <header class="top-nav">
+        <div class="logo-group">
+            <div class="shield-logo">
+                <span class="shield-icon">🛡️</span>
+            </div>
+            <div>
+                <h1 class="brand-title">AdShield <span class="badge-vps">VPS DNS</span></h1>
+                <p class="brand-subtitle">High-Performance Private DNS & Layer 4 Ad Filtering</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="status-pill status-active" id="serverStatusPill">
+                <span class="status-dot pulse"></span>
+                <span id="serverStatusText">DoT 853 Active</span>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('setupModal')">
+                <span>📱</span> Connect Private DNS
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboardTab')">📊 Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('queriesTab')">⚡ Live Query Log</button>
+            <button class="tab-btn" onclick="switchTab('rulesTab')">🛡️ Filter Rules</button>
+            <button class="tab-btn" onclick="switchTab('settingsTab')">⚙️ Upstream & Settings</button>
+        </nav>
+
+        <!-- Tab 1: Dashboard -->
+        <section id="dashboardTab" class="tab-content active">
+            <!-- Metric Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-label">TOTAL QUERIES</span>
+                        <span class="metric-icon">🌐</span>
+                    </div>
+                    <div class="metric-value" id="valTotalQueries">0</div>
+                    <div class="metric-footer" id="valUptime">Uptime: 0m</div>
+                </div>
+
+                <div class="metric-card card-glow-red">
+                    <div class="metric-header">
+                        <span class="metric-label">ADS & TRACKERS BLOCKED</span>
+                        <span class="metric-icon">🚫</span>
+                    </div>
+                    <div class="metric-value text-red" id="valBlockedQueries">0</div>
+                    <div class="metric-footer text-muted" id="valCommunityRules">77k+ Active Rules</div>
+                </div>
+
+                <div class="metric-card card-glow-cyan">
+                    <div class="metric-header">
+                        <span class="metric-label">BLOCK RATE</span>
+                        <span class="metric-icon">📈</span>
+                    </div>
+                    <div class="metric-value text-cyan" id="valBlockRate">0%</div>
+                    <div class="metric-footer">
+                        <div class="ratio-bar-bg">
+                            <div class="ratio-bar-fill" id="ratioBarFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card card-glow-green">
+                    <div class="metric-header">
+                        <span class="metric-label">CACHE HIT SPEED (&lt;1ms)</span>
+                        <span class="metric-icon">⚡</span>
+                    </div>
+                    <div class="metric-value text-green" id="valCacheRate">0%</div>
+                    <div class="metric-footer" id="valCacheCount">0 queries served from RAM</div>
+                </div>
+            </div>
+
+            <!-- Specialized Shields Grid -->
+            <h2 class="section-title">Specialized App Protection Shields</h2>
+            <div class="shields-grid">
+                <div class="shield-card">
+                    <div class="shield-header">
+                        <div class="shield-icon-title">
+                            <span class="shield-badge-icon youtube-icon">▶</span>
+                            <div>
+                                <h3>YouTube Shield</h3>
+                                <p>Blocks telemetry & promo banners while strictly preserving <code>googlevideo.com</code></p>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleYouTube" onchange="toggleShield('youtube_shield', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="shield-footer">
+                        <span class="stat-tag" id="valYtBlocked">Blocked: 0 ads</span>
+                    </div>
+                </div>
+
+                <div class="shield-card">
+                    <div class="shield-header">
+                        <div class="shield-icon-title">
+                            <span class="shield-badge-icon spotify-icon">♫</span>
+                            <div>
+                                <h3>Spotify Shield</h3>
+                                <p>Blocks audio ad telemetry while keeping music streaming audio endpoints 100% smooth</p>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleSpotify" onchange="toggleShield('spotify_shield', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="shield-footer">
+                        <span class="stat-tag" id="valSpBlocked">Blocked: 0 ads</span>
+                    </div>
+                </div>
+
+                <div class="shield-card">
+                    <div class="shield-header">
+                        <div class="shield-icon-title">
+                            <span class="shield-badge-icon hotstar-icon">⚡</span>
+                            <div>
+                                <h3>JioCinema & Hotstar</h3>
+                                <p>Blocks embedded video ad injection networks (jioads, vserve, imasdk)</p>
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggleHotstar" onchange="toggleShield('hotstar_shield', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="shield-footer">
+                        <span class="stat-tag" id="valHsBlocked">Blocked: 0 ads</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: Live Query Log -->
+        <section id="queriesTab" class="tab-content">
+            <div class="panel-header">
+                <div>
+                    <h2>Real-Time DNS Stream</h2>
+                    <p class="text-muted">Live inspection of all incoming queries across DoT, DoH, and UDP</p>
+                </div>
+                <div class="filter-controls">
+                    <input type="text" id="querySearchInput" placeholder="Filter domain or IP..." onkeyup="filterQueriesTable()">
+                    <div class="filter-chips">
+                        <button class="chip active" onclick="setQueryStatusFilter('all', this)">All</button>
+                        <button class="chip chip-red" onclick="setQueryStatusFilter('blocked', this)">Blocked</button>
+                        <button class="chip chip-green" onclick="setQueryStatusFilter('allowed', this)">Allowed</button>
+                        <button class="chip chip-cyan" onclick="setQueryStatusFilter('cached', this)">Cached</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Protocol</th>
+                            <th>Client IP</th>
+                            <th>Domain</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Latency</th>
+                        </tr>
+                    </thead>
+                    <tbody id="queryTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">Listening for DNS queries...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Tab 3: Filter Rules -->
+        <section id="rulesTab" class="tab-content">
+            <div class="panel-header">
+                <div>
+                    <h2>Filter Rules Management</h2>
+                    <p class="text-muted">Manage custom whitelists, blacklists, and community ad-blocking lists</p>
+                </div>
+                <button class="btn btn-secondary" onclick="updateCommunityList()">
+                    🔄 Update Community List
+                </button>
+            </div>
+
+            <div class="rules-columns">
+                <!-- Whitelist Column -->
+                <div class="rules-box">
+                    <div class="rules-box-header">
+                        <h3>🟢 Custom Whitelist</h3>
+                        <span class="count-badge" id="whitelistCount">0</span>
+                    </div>
+                    <p class="text-muted text-sm">Domains here are never blocked by any shield.</p>
+                    <div class="add-rule-bar">
+                        <input type="text" id="addWhitelistInput" placeholder="example.com">
+                        <button class="btn btn-sm btn-cyan" onclick="addRule('whitelist')">Add</button>
+                    </div>
+                    <ul class="rule-list" id="whitelistItems"></ul>
+                </div>
+
+                <!-- Blacklist Column -->
+                <div class="rules-box">
+                    <div class="rules-box-header">
+                        <h3>🔴 Custom Blacklist</h3>
+                        <span class="count-badge" id="blacklistCount">0</span>
+                    </div>
+                    <p class="text-muted text-sm">Domains here are always sinkholed.</p>
+                    <div class="add-rule-bar">
+                        <input type="text" id="addBlacklistInput" placeholder="adtracker.com">
+                        <button class="btn btn-sm btn-red" onclick="addRule('blacklist')">Add</button>
+                    </div>
+                    <ul class="rule-list" id="blacklistItems"></ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: Settings -->
+        <section id="settingsTab" class="tab-content">
+            <div class="panel-header">
+                <div>
+                    <h2>Server & Upstream Resolver Settings</h2>
+                    <p class="text-muted">Configure DNS upstream fallback and network parameters</p>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <h3>Upstream DNS Forwarder</h3>
+                <p class="text-muted">Unblocked queries are resolved using these ultra-fast recursive resolvers:</p>
+                <div class="provider-radio-group">
+                    <label class="provider-option">
+                        <input type="radio" name="upstreamProvider" value="cloudflare" onchange="changeUpstream('cloudflare')">
+                        <div class="provider-info">
+                            <strong>Cloudflare (1.1.1.1)</strong>
+                            <span>Fastest global latency and privacy-focused</span>
+                        </div>
+                    </label>
+                    <label class="provider-option">
+                        <input type="radio" name="upstreamProvider" value="google" onchange="changeUpstream('google')">
+                        <div class="provider-info">
+                            <strong>Google (8.8.8.8)</strong>
+                            <span>High resilience and worldwide routing</span>
+                        </div>
+                    </label>
+                    <label class="provider-option">
+                        <input type="radio" name="upstreamProvider" value="quad9" onchange="changeUpstream('quad9')">
+                        <div class="provider-info">
+                            <strong>Quad9 (9.9.9.9)</strong>
+                            <span>Built-in malicious threat and malware intelligence</span>
+                        </div>
+                    </label>
+                    <label class="provider-option">
+                        <input type="radio" name="upstreamProvider" value="adguard" onchange="changeUpstream('adguard')">
+                        <div class="provider-info">
+                            <strong>AdGuard (94.140.14.14)</strong>
+                            <span>Upstream ad-filtering secondary resolver</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Connect Private DNS Modal -->
+    <div id="setupModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>📱 Connect to Your Private DNS</h2>
+                <button class="modal-close" onclick="closeModal('setupModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>Connect your phone and devices without installing any battery-draining VPN apps:</p>
+
+                <div class="setup-hostname-box">
+                    <span class="label">Your Private DNS Hostname:</span>
+                    <div class="copy-field">
+                        <input type="text" id="modalHostnameDisplay" readonly value="dns.example.com">
+                        <button class="btn btn-sm btn-cyan" onclick="copyHostname()">Copy</button>
+                    </div>
+                </div>
+
+                <div class="os-guides">
+                    <div class="guide-item">
+                        <h4>🤖 Android (Version 9 to 15+)</h4>
+                        <ol>
+                            <li>Open <strong>Settings</strong> → <strong>Network & Internet</strong> (or Connections).</li>
+                            <li>Tap <strong>Private DNS</strong>.</li>
+                            <li>Select <strong>Private DNS provider hostname</strong>.</li>
+                            <li>Paste: <code id="guideAndroidHost">dns.example.com</code> and tap <strong>Save</strong>.</li>
+                        </ol>
+                        <div class="tip-box">
+                            ✨ Android will instantly connect over encrypted <strong>DoT (Port 853)</strong>. Zero battery drain!
+                        </div>
+                    </div>
+
+                    <div class="guide-item">
+                        <h4>🍎 iOS / iPadOS / macOS</h4>
+                        <p>Configure DNS-over-HTTPS (DoH) via an encrypted mobile profile or in browser settings:</p>
+                        <p>DoH URL: <code id="guideDohUrl">https://dns.example.com/dns-query</code></p>
+                    </div>
+
+                    <div class="guide-item">
+                        <h4>💻 Windows 11</h4>
+                        <ol>
+                            <li>Open <strong>Settings</strong> → <strong>Network & Internet</strong> → <strong>Wi-Fi / Ethernet</strong>.</li>
+                            <li>Under <strong>DNS server assignment</strong>, click <strong>Edit</strong>.</li>
+                            <li>Select <strong>Manual</strong> → Enable <strong>IPv4</strong> → Enter your VPS IP.</li>
+                            <li>Set DNS encryption to <strong>Encrypted only (DNS over HTTPS)</strong> with template <code>https://dns.example.com/dns-query</code>.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

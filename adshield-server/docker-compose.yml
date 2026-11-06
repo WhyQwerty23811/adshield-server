@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  adshield:
+    build: .
+    container_name: adshield-dns
+    restart: always
+    network_mode: "host" # Best performance for low latency DNS and direct port binding
+    volumes:
+      - ./config.json:/opt/adshield/config.json
+      - ./blocklists:/opt/adshield/blocklists
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    environment:
+      - TZ=UTC
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
