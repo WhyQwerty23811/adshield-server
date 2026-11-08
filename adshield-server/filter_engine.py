@@ -98,14 +98,19 @@ ESSENTIAL_YOUTUBE_DOMAINS: Set[str] = {
 }
 
 # Spotify Filter (SpotifyFilter.java)
+# Spotify Filter (SpotifyFilter.java)
+# Ad decisioning / measurement / creative delivery hosts. Music and podcast audio
+# come from the ESSENTIAL list below and are deliberately never blocked.
 SPOTIFY_AD_DOMAINS: Set[str] = {
     "aet.spotify.com",
     "adeventtracker.spotify.com",
     "ads-fa.spotify.com",
-    "crashdump.spotify.com",
+    "ads.spotify.com",
+    "ads-akp.spotify.com",
+    "audio-ads.spotify.com",
     "adstudio.spotify.com",
+    "spade.spotify.com",
     "video-fa.scdn.co",
-    "gated.spotify.com",
 }
 
 # Essential Spotify domains that must NEVER be blocked (guarantees audio streaming & login)
@@ -294,8 +299,10 @@ class FilterEngine:
         # Spotify
         if domain in ESSENTIAL_SPOTIFY_DOMAINS:
             return True
-        if domain.endswith(".scdn.co") and not domain.startswith("video-fa."):
-            return True
+        if domain.endswith(".scdn.co") or domain == "scdn.co":
+            # video-fa.scdn.co and its subdomains serve ad creatives, not audio
+            if not (domain == "video-fa.scdn.co" or domain.endswith(".video-fa.scdn.co")):
+                return True
 
         # JioCinema / Hotstar
         if domain in ESSENTIAL_HOTSTAR_DOMAINS:
