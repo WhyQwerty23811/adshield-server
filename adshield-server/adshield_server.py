@@ -16,6 +16,7 @@ import ssl
 import struct
 import socket
 import base64
+import hmac
 import urllib.parse
 from datetime import datetime
 from collections import deque
@@ -404,6 +405,29 @@ class AdShieldServer:
             except Exception as e:
                 print(f"[AdShield] Could not bind DoH HTTPS port {doh_port}: {e}")
 
+    def _check_dashboard_auth(self, headers):
+        """True = authorised, False = credentials required/invalid, None = auth disabled."""
+        user = self.config.get("dashboard_user")
+        pwd = self.config.get("dashboard_password")
+        if not (user and pwd):
+            try:
+                with open(self.config.get("dashboard_auth_file", "/opt/adshield/dashboard_auth.json"), "r") as fh:
+                    data = json.load(fh)
+                user, pwd = data.get("user"), data.get("password")
+            except Exception:
+                user = pwd = None
+        if not (user and pwd):
+            return None
+        raw = headers.get("authorization", "")
+        if not raw.lower().startswith("basic "):
+            return False
+        try:
+            decoded = base64.b64decode(raw[6:].strip()).decode("utf-8", "ignore")
+            u, _, p = decoded.partition(":")
+        except Exception:
+            return False
+        return hmac.compare_digest(u, str(user)) and hmac.compare_digest(p, str(pwd))
+
     def _create_ssl_context(self) -> Optional[ssl.SSLContext]:
         cert = self.config.get("tls_cert_file")
         key = self.config.get("tls_key_file")
@@ -488,6 +512,21 @@ class AdShieldServer:
                 else:
                     self._send_http_response(writer, 400, "Bad Request", "Missing DNS message")
                     return
+
+            # -------------------------------------------------------------
+            # dashboard_auth_guard: HTTP Basic Auth for UI/API (DoH stays public)
+            # -------------------------------------------------------------
+            if self._check_dashboard_auth(headers) is False:
+                _b = b"Authentication required"
+                writer.write((
+                    "HTTP/1.1 401 Unauthorized\r\n"
+                    'WWW-Authenticate: Basic realm="AdShield Dashboard", charset="UTF-8"\r\n'
+                    "Content-Type: text/plain; charset=utf-8\r\n"
+                    "Content-Length: " + str(len(_b)) + "\r\n"
+                    "Connection: close\r\n\r\n"
+                ).encode("utf-8") + _b)
+                await writer.drain()
+                return
 
             # -------------------------------------------------------------
             # Route 2: REST APIs

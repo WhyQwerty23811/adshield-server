@@ -40,7 +40,7 @@ echo -e "Example: ${CYAN}dns.yourdomain.com${NC} or ${CYAN}adblock.example.org${
 echo -e "Make sure you added an DNS 'A' record pointing your domain to this VPS IP: ${BOLD}${DETECTED_IP}${NC}\n"
 
 read -rp "Enter your Domain / Hostname for Private DNS: " DOMAIN_NAME
-DOMAIN_NAME=$(echo "$DOMAIN_NAME" | tr -d '[:space:]' | tr '[:upper:]' | tr '[:lower:]')
+DOMAIN_NAME=$(echo "$DOMAIN_NAME" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
 
 if [[ -z "$DOMAIN_NAME" ]]; then
     echo -e "${RED}[ERROR] Domain name cannot be empty.${NC}"
