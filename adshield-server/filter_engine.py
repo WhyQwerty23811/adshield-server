@@ -59,23 +59,32 @@ BUILT_IN_BLOCKED_DOMAINS: Set[str] = {
 
 # YouTube Filter (YouTubeFilter.java)
 YOUTUBE_AD_DOMAINS: Set[str] = {
+    # Only true YouTube endpoints count toward the "YouTube Shield" stat.
     "ad.youtube.com",
     "ads.youtube.com",
     "youtubeads.l.google.com",
+    "s.youtube.com",
+    "video-stats.l.google.com",
+    "partnerad.l.google.com",
+}
+
+# Generic Google / DoubleClick ad infrastructure. Still blocked, but counted as a
+# normal ad-network block: Play Services, Chrome and most Android apps query these
+# constantly, so attributing them to "YouTube" made the dashboard misleading.
+GENERIC_GOOGLE_AD_DOMAINS: Set[str] = {
     "googleads.g.doubleclick.net",
     "pubads.g.doubleclick.net",
     "securepubads.g.doubleclick.net",
     "static.doubleclick.net",
-    "s.youtube.com",
-    "video-stats.l.google.com",
     "pagead2.googlesyndication.com",
     "pagead.l.google.com",
-    "adservice.google.com",
     "ade.googlesyndication.com",
     "adclick.g.doubleclick.net",
-    "partnerad.l.google.com",
     "stats.g.doubleclick.net",
+    "adservice.google.com",
 }
+
+BUILT_IN_BLOCKED_DOMAINS |= GENERIC_GOOGLE_AD_DOMAINS
 
 # Essential YouTube domains that must NEVER be blocked (guarantees video streaming & auth)
 ESSENTIAL_YOUTUBE_DOMAINS: Set[str] = {
